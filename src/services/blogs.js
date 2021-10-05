@@ -1,11 +1,24 @@
 import axios from 'axios'
 const baseUrl = '/api/blogs'
 
-const getAll = () =>
+let token = null;
+
+const setToken = function (novaToken)
 {
-  const request = axios.get(baseUrl)
-  return request.then(response => response.data)
+  token = `Bearer ${novaToken}`;
 }
 
-const blogService = { getAll };
+const getAll = () =>
+{
+  const request = axios.get(baseUrl);
+  return request.then(response => response.data);
+}
+
+const create = async (newblog) =>
+{
+  const response = await axios.post(baseUrl, newblog, { headers: { Authorization: token } });
+  return response.data;
+}
+
+const blogService = { setToken, getAll, create };
 export default blogService;
