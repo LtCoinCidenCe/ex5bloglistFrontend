@@ -17,6 +17,21 @@ const App = () =>
     )
   }, []);
 
+  useEffect(() =>
+  {
+    const loggedUserJSON = window.localStorage.getItem('loggedUser');
+    if (loggedUserJSON)
+    {
+      setUser(JSON.parse(loggedUserJSON));
+    }
+  }, []);
+
+  const handleLogout = () =>
+  {
+    setUser(null);
+    window.localStorage.removeItem('loggedUser');
+  }
+
   const handleLogin = async (event) =>
   {
     event.preventDefault();
@@ -28,6 +43,8 @@ const App = () =>
       setUser(kirjaudu);
       setUsername('');
       setPassword('');
+      // preserve token
+      window.localStorage.setItem('loggedUser', JSON.stringify(kirjaudu));
     }
     catch (exception)
     {
@@ -62,7 +79,7 @@ const App = () =>
     return (
       <div>
         <h2>blogs</h2>
-        <p>{user.name} logged in</p>
+        <p><span>{user.name} logged in</span><button onClick={handleLogout}>logout</button></p>
         {blogs.map(blog =>
           <Blog key={blog.id} blog={blog} />
         )}
