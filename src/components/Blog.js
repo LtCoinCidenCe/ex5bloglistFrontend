@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const Blog = ({ blog, handleLike }) =>
+const Blog = ({ blog, handleLike, handleRemove }) =>
 {
   const blogStyle = {
     paddingTop: 10,
@@ -10,7 +10,7 @@ const Blog = ({ blog, handleLike }) =>
     marginBottom: 5
   }
   const [showDetail, setShowDetail] = useState(false);
-
+  const displayRemove = () => handleRemove === null ? { display: 'none' } : null;
   if (showDetail === false)
     return (
       <div style={blogStyle}>
@@ -24,6 +24,7 @@ const Blog = ({ blog, handleLike }) =>
         <div>{blog.url}</div>
         <div>likes {blog.likes}<button onClick={handleLike}>like</button></div>
         <div>{blog.author}</div>
+        <div style={displayRemove()}><button onClick={handleRemove}>remove</button></div>
       </div>
     )
 }

@@ -8,13 +8,13 @@ import loginService from './services/login'
 
 const App = () =>
 {
-  const [blogs, setBlogs] = useState([]);
+  const [blogs, setBlogs] = useState([]); // blog.title url author likes user{} 
   const [message, setMessage] = useState('');
   const [mTime, setmTime] = useState(null);
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null); // user.username user.name user.token
 
   const blogCreator = useRef();
 
@@ -71,7 +71,11 @@ const App = () =>
   {
     try
     {
-      const response = await blogService.create(blog);
+      let response = await blogService.create(blog);
+      const userInformation = { username: user.username, name: user.name }
+      // manually fix something
+      response.user = userInformation;
+
       setBlogs(blogs.concat(response).sort((a, b) => b.likes - a.likes)); // 5.9 add sort
       blogCreator.current.toggleVisibility();
       setMessage(`s:a new blog "${response.title}" is added`);
@@ -89,6 +93,7 @@ const App = () =>
 
   const plusLike = async (id) =>
   {
+    // changed backend PUT route to apply 'populate'
     const oldBlog = blogs.find(blog => blog.id === id);
     let newblog = { ...oldBlog };
     delete newblog.id;
@@ -101,7 +106,7 @@ const App = () =>
       setBlogs(blogs.map(blog => blog.id !== oldBlog.id ? blog : data)
         .sort((a, b) => b.likes - a.likes)); // 5.9 add sort
       // something wrong would happen if there is no such blog with that id because of backend is not handling
-      // there was no that exercise in part 4 around update with credential and exception
+      // there was no that exercise in part 4 about update around credential and exception
       // but still any blog needs to be deleted from other client before it causes an error
     }
     catch (exception)
@@ -110,6 +115,29 @@ const App = () =>
       setMessage(`e:${exception.response}`);
       clearTimeout(mTime);
       setmTime(setTimeout(() => { setMessage(''); }, 5000));
+    }
+  }
+
+  const removeBlog = async (id) =>
+  {
+    const blog = blogs.find(blog => blog.id === id);
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`))
+    {
+      try
+      {
+        await blogService.remove(id);
+        setBlogs(blogs.filter(blog => blog.id !== id)); // deleting does not require sorting
+        setMessage(`s:Removed ${blog.title}`);
+        clearTimeout(mTime);
+        setmTime(setTimeout(() => { setMessage(''); }, 5000));
+      }
+      catch (exception)
+      {
+        console.log(exception);
+        setMessage(`e:error`);
+        clearTimeout(mTime);
+        setmTime(setTimeout(() => { setMessage(''); }, 5000));
+      }
     }
   }
 
@@ -152,7 +180,11 @@ const App = () =>
 
         {blogForm()}
         {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} handleLike={() => plusLike(blog.id)} />
+          <Blog key={blog.id}
+            blog={blog}
+            handleLike={() => plusLike(blog.id)}
+            handleRemove={blog.user.username === user.username ? () => removeBlog(blog.id) : null}
+          />
         )}
       </div>
     )
