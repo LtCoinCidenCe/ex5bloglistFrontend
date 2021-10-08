@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
+import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
@@ -69,17 +70,12 @@ const App = () =>
     }
   }
 
-  const handleCreate = async (event) =>
+  const createBlog = async (blog) =>
   {
-    event.preventDefault();
-    const newBlog = { title, author, url };
     try
     {
-      const response = await blogService.create(newBlog);
+      const response = await blogService.create(blog);
       setBlogs(blogs.concat(response));
-      setTitle('');
-      setAuthor('');
-      setUrl('');
       blogCreator.current.toggleVisibility();
       setMessage(`s:a new blog "${response.title}" is added`);
       clearTimeout(mTime);
@@ -93,6 +89,12 @@ const App = () =>
       setmTime(setTimeout(() => { setMessage(''); }, 5000));
     }
   }
+
+  const blogForm = () => (
+    <Togglable buttonLabel="create new blog" ref={blogCreator}>
+      <BlogForm createBlog={createBlog} />
+    </Togglable>
+  )
 
   if (user === null)
     return (
@@ -125,15 +127,7 @@ const App = () =>
         <Notification message={message} />
         <p><span>{user.name} logged in</span><button onClick={handleLogout}>logout</button></p>
 
-        <Togglable buttonLabel="create new blog" ref={blogCreator}>
-          <h3>create new blog</h3>
-          <form onSubmit={handleCreate}>
-            <div>title: <input type="text" name="title" value={title} onChange={event => setTitle(event.target.value)} /></div>
-            <div>author: <input type="text" name="author" value={author} onChange={event => setAuthor(event.target.value)} /></div>
-            <div>url: <input type="text" name="url" value={url} onChange={event => setUrl(event.target.value)} /></div>
-            <div><input type="submit" value="create" /></div>
-          </form>
-        </Togglable>
+        {blogForm()}
         {blogs.map(blog =>
           <Blog key={blog.id} blog={blog} />
         )}
