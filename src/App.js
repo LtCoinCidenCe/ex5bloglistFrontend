@@ -86,6 +86,31 @@ const App = () =>
     }
   }
 
+  const plusLike = async (id) =>
+  {
+    const oldBlog = blogs.find(blog => blog.id === id);
+    let newblog = { ...oldBlog };
+    delete newblog.id;
+    newblog.user = oldBlog.user.id;
+    newblog.likes += 1;
+
+    try
+    {
+      const data = await blogService.update(oldBlog.id, newblog);
+      setBlogs(blogs.map(blog => blog.id !== oldBlog.id ? blog : data));
+      // something wrong would happen if there is no such blog with that id because of backend is not handling
+      // there was no that exercise in part 4 around update with credential and exception
+      // but still any blog needs to be deleted from other client before it causes an error
+    }
+    catch (exception)
+    {
+      console.log(exception);
+      setMessage(`e:${exception.response}`);
+      clearTimeout(mTime);
+      setmTime(setTimeout(() => { setMessage(''); }, 5000));
+    }
+  }
+
   const blogForm = () => (
     <Togglable buttonLabel="create new blog" ref={blogCreator}>
       <BlogForm createBlog={createBlog} />
@@ -125,7 +150,7 @@ const App = () =>
 
         {blogForm()}
         {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
+          <Blog key={blog.id} blog={blog} handleLike={() => plusLike(blog.id)} />
         )}
       </div>
     )
