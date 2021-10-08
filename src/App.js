@@ -20,8 +20,9 @@ const App = () =>
 
   useEffect(() =>
   {
+    // 5.9 add sort
     blogService.getAll().then(blogs =>
-      setBlogs(blogs)
+      setBlogs(blogs.sort((a, b) => b.likes - a.likes))
     )
   }, []);
 
@@ -71,7 +72,7 @@ const App = () =>
     try
     {
       const response = await blogService.create(blog);
-      setBlogs(blogs.concat(response));
+      setBlogs(blogs.concat(response).sort((a, b) => b.likes - a.likes)); // 5.9 add sort
       blogCreator.current.toggleVisibility();
       setMessage(`s:a new blog "${response.title}" is added`);
       clearTimeout(mTime);
@@ -97,7 +98,8 @@ const App = () =>
     try
     {
       const data = await blogService.update(oldBlog.id, newblog);
-      setBlogs(blogs.map(blog => blog.id !== oldBlog.id ? blog : data));
+      setBlogs(blogs.map(blog => blog.id !== oldBlog.id ? blog : data)
+        .sort((a, b) => b.likes - a.likes)); // 5.9 add sort
       // something wrong would happen if there is no such blog with that id because of backend is not handling
       // there was no that exercise in part 4 around update with credential and exception
       // but still any blog needs to be deleted from other client before it causes an error
