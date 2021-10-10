@@ -8,7 +8,7 @@ const Blog = ({ blog, handleLike, handleRemove }) =>
     border: 'solid',
     borderWidth: 1,
     marginBottom: 5
-  }
+  };
   const [showDetail, setShowDetail] = useState(false);
   const displayRemove = () => handleRemove === null ? { display: 'none' } : null;
   if (showDetail === false)
@@ -16,7 +16,7 @@ const Blog = ({ blog, handleLike, handleRemove }) =>
       <div style={blogStyle}>
         {blog.title} {blog.author} <button onClick={() => setShowDetail(!showDetail)}>view</button>
       </div>
-    )
+    );
   else
     return (
       <div style={blogStyle}>
@@ -26,7 +26,7 @@ const Blog = ({ blog, handleLike, handleRemove }) =>
         <div>{blog.author}</div>
         <div style={displayRemove()}><button onClick={handleRemove}>remove</button></div>
       </div>
-    )
-}
+    );
+};
 
 export default Blog;

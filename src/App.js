@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react'
-import Blog from './components/Blog'
-import BlogForm from './components/BlogForm'
-import Notification from './components/Notification'
-import Togglable from './components/Togglable'
-import blogService from './services/blogs'
-import loginService from './services/login'
+import React, { useState, useEffect, useRef } from 'react';
+import Blog from './components/Blog';
+import BlogForm from './components/BlogForm';
+import Notification from './components/Notification';
+import Togglable from './components/Togglable';
+import blogService from './services/blogs';
+import loginService from './services/login';
 
 const App = () =>
 {
-  const [blogs, setBlogs] = useState([]); // blog.title url author likes user{} 
+  const [blogs, setBlogs] = useState([]); // blog.title url author likes user{}
   const [message, setMessage] = useState('');
   const [mTime, setmTime] = useState(null);
 
@@ -23,7 +23,7 @@ const App = () =>
     // 5.9 add sort
     blogService.getAll().then(blogs =>
       setBlogs(blogs.sort((a, b) => b.likes - a.likes))
-    )
+    );
   }, []);
 
   useEffect(() =>
@@ -42,7 +42,7 @@ const App = () =>
     setUser(null);
     blogService.setToken(null);
     window.localStorage.removeItem('loggedUser');
-  }
+  };
 
   const handleLogin = async (event) =>
   {
@@ -65,14 +65,14 @@ const App = () =>
       clearTimeout(mTime);
       setmTime(setTimeout(() => { setMessage(''); }, 5000));
     }
-  }
+  };
 
   const createBlog = async (blog) =>
   {
     try
     {
       let response = await blogService.create(blog);
-      const userInformation = { username: user.username, name: user.name }
+      const userInformation = { username: user.username, name: user.name };
       // manually fix something
       response.user = userInformation;
 
@@ -89,7 +89,7 @@ const App = () =>
       clearTimeout(mTime);
       setmTime(setTimeout(() => { setMessage(''); }, 5000));
     }
-  }
+  };
 
   const plusLike = async (id) =>
   {
@@ -116,7 +116,7 @@ const App = () =>
       clearTimeout(mTime);
       setmTime(setTimeout(() => { setMessage(''); }, 5000));
     }
-  }
+  };
 
   const removeBlog = async (id) =>
   {
@@ -134,18 +134,18 @@ const App = () =>
       catch (exception)
       {
         console.log(exception);
-        setMessage(`e:error`);
+        setMessage('e:error');
         clearTimeout(mTime);
         setmTime(setTimeout(() => { setMessage(''); }, 5000));
       }
     }
-  }
+  };
 
   const blogForm = () => (
     <Togglable buttonLabel="create new blog" ref={blogCreator}>
       <BlogForm createBlog={createBlog} />
     </Togglable>
-  )
+  );
 
   if (user === null)
     return (
@@ -170,7 +170,7 @@ const App = () =>
           <button type="submit">login</button>
         </form>
       </div>
-    )
+    );
   else
     return (
       <div>
@@ -187,7 +187,7 @@ const App = () =>
           />
         )}
       </div>
-    )
-}
+    );
+};
 
 export default App;
