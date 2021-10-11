@@ -1,13 +1,12 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import { render, fireEvent } from '@testing-library/react';
-import { prettyDOM } from '@testing-library/dom';
 import Blog from './Blog';
 
 const blog = {
-  title: "React patterns",
-  author: "Michael Chan",
-  url: "https://reactpatterns.com/",
+  title: 'React patterns',
+  author: 'Michael Chan',
+  url: 'https://reactpatterns.com/',
   likes: 7
 };
 
