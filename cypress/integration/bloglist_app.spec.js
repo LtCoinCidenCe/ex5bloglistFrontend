@@ -136,6 +136,60 @@ describe('Blog app', function ()
         cy.contains(initialBlogs[2].title).contains('view').click();
         cy.get('.removeBlog').should('have.css', 'display', 'none');
       });
+
+      it.only('blogs are ordered according to likes', function ()
+      {
+        // click all view button
+        cy.get('button.blogViewButton')
+          .then(buttons =>
+          {
+            for (let i = 0; i < buttons.length; i++)
+            {
+              const btn = buttons[i];
+              cy.wrap(btn).click();
+            }
+
+            cy.get('.blogLikes').then(likes =>
+            {
+              // shunxu paixu
+              console.log(likes);
+              let likesArray = likes.get().map(row => parseInt(row.childNodes[1].data));
+              console.log(likesArray);
+              likesArray.reduce((a, b) =>
+              {
+                expect(a).to.be.at.least(b);
+                return b;
+              });
+
+              // let sorted = likesArray.slice().sort((a, b) => b - a);
+              // expect(likesArray).to.deep.equal(sorted);
+              // cy.wrap(likesArray).should('deep.equal', sorted);
+
+              // dynamic changing likes
+              cy.wrap(likes[2].childNodes[2]).as('like2');
+              const maxlikes = Math.max(...initialBlogs.map(blg => blg.likes));
+              for (let i = 0; i < maxlikes + 1; i++)
+              {
+                cy.get('@like2').click();
+                cy.wait(500);
+              }
+            });
+
+            // new order
+            cy.get('.blogLikes').then(likes =>
+            {
+              // shunxu paixu
+              console.log(likes);
+              let likesArray = likes.get().map(row => parseInt(row.childNodes[1].data));
+              console.log(likesArray);
+              likesArray.reduce((a, b) =>
+              {
+                expect(a).to.be.at.least(b);
+                return b;
+              });
+            });
+          });
+      });
     });
   });
 });
