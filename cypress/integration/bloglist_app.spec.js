@@ -42,12 +42,20 @@ describe('Blog app', function ()
   beforeEach(function ()
   {
     cy.request('POST', 'http://localhost:3003/api/testing/reset');
-    const user = {
+    const user1 = {
       name: 'Root User',
       username: 'root',
       password: 'secret'
     };
-    cy.request('POST', 'http://localhost:3000/api/users/', user);
+    cy.request('POST', 'http://localhost:3000/api/users/', user1);
+
+    const user2 = {
+      name: 'NormalUser',
+      username: 'normal',
+      password: 'secret'
+    };
+    cy.request('POST', 'http://localhost:3000/api/users/', user2);
+
     cy.visit('http://localhost:3000');
   });
 
@@ -110,6 +118,23 @@ describe('Blog app', function ()
       {
         cy.contains(initialBlogs[4].title).contains('view').click();
         cy.contains(initialBlogs[4].title).parent().contains('like').click();
+      });
+
+      it('owner can delete blogs', function ()
+      {
+        cy.contains(initialBlogs[4].title).contains('view').click();
+        cy.contains(initialBlogs[4].title).parent().contains('remove').click();
+      });
+
+      it('other users can not delete blogs', function ()
+      {
+        cy.contains('logout').click();
+        cy.get('#loginusername').type('normal');
+        cy.get('#loginpassword').type('secret');
+        cy.get('#loginButton').click();
+        cy.contains('NormalUser logged in');
+        cy.contains(initialBlogs[2].title).contains('view').click();
+        cy.get('.removeBlog').should('have.css', 'display', 'none');
       });
     });
   });
