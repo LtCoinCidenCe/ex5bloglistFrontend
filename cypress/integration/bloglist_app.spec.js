@@ -36,4 +36,24 @@ describe('Blog app', function ()
       cy.contains('invalid username or password').should('have.css', 'color', 'rgb(255, 0, 0)');
     });
   });
+
+  describe('When logged in', function ()
+  {
+    beforeEach(function ()
+    {
+      cy.login({ username: 'root', password: 'secret' });
+      // log in user here
+    });
+
+    it('A blog can be created', function ()
+    {
+      cy.contains('create new blog').click();
+      cy.get('#ttitle').type('React patterns');
+      cy.get('#tauthor').type('Michael Chan');
+      cy.get('#turl').type('https://reactpatterns.com/');
+      cy.get('form').contains('create').click();
+      // cy.get('#submitNewBlog').click();
+      cy.contains('React patterns Michael Chan');
+    });
+  });
 });
